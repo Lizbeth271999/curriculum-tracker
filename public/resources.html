@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>My Curriculum — Resources</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body data-page="resources">
+  <div class="app-shell">
+    <div id="sidebar-root"></div>
+    <main class="main">
+      <div class="page-header">
+        <h1>Resources</h1>
+        <p>Every book, course, video, or article you're pulling into your curriculum.</p>
+      </div>
+
+      <div class="card">
+        <div class="toolbar">
+          <input class="search-input" id="search" placeholder="Search resources…" />
+          <button class="btn btn-primary" id="add-btn">+ New Resource</button>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Resource</th>
+                <th>Type</th>
+                <th>Curriculum</th>
+                <th>Priority</th>
+                <th>Status</th>
+                <th>Notes</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="rows"></tbody>
+          </table>
+        </div>
+        <div id="empty" class="empty-state" style="display:none;">No resources yet. Add your first one above.</div>
+      </div>
+    </main>
+  </div>
+
+  <script src="/js/utils.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/nav.js"></script>
+  <script src="/js/modal.js"></script>
+  <script src="/js/resources.js"></script>
+</body>
+</html>

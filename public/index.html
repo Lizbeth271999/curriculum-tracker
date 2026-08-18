@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>My Curriculum — Dashboard</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body data-page="dashboard">
+  <div class="app-shell">
+    <div id="sidebar-root"></div>
+    <main class="main">
+      <div class="welcome-banner">
+        <div>
+          <h1 id="welcome-heading">Welcome back</h1>
+          <p id="welcome-sub">Here's where your personal curriculum stands today.</p>
+        </div>
+      </div>
+
+      <div class="card" id="current-curriculum-card">
+        <div class="card-title">Current Curriculum</div>
+        <div id="current-curriculum-body">Loading…</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Quick Add</div>
+        <div class="quick-actions">
+          <button class="btn btn-primary" id="qa-curriculum">+ New Curriculum</button>
+          <button class="btn" id="qa-lesson">+ New Lesson</button>
+          <button class="btn" id="qa-book">+ New Book</button>
+          <button class="btn" id="qa-resource">+ New Resource</button>
+          <button class="btn" id="qa-reflection">+ New Reflection</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Progress This Year</div>
+        <div class="stat-grid" id="progress-stats"></div>
+      </div>
+    </main>
+  </div>
+
+  <script src="/js/utils.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/nav.js"></script>
+  <script src="/js/modal.js"></script>
+  <script src="/js/dashboard.js"></script>
+</body>
+</html>

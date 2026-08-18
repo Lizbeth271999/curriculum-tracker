@@ -1,0 +1,15 @@
+{
+  "name": "curriculum-tracker",
+  "version": "1.0.0",
+  "description": "Personal curriculum tracker: dashboard, curriculum library, resources, lesson planner, ActionLab, reflection journal, vault, and habit tracker.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "seed-demo": "node scripts/seed-demo.js"
+  },
+  "engines": {
+    "node": ">=22.5.0"
+  },
+  "license": "UNLICENSED",
+  "private": true
+}

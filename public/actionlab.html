@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>My Curriculum — ActionLab</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body data-page="actionlab">
+  <div class="app-shell">
+    <div id="sidebar-root"></div>
+    <main class="main">
+      <div class="page-header">
+        <h1>ActionLab</h1>
+        <p>Where learning turns into doing. Track implementation of what you're studying.</p>
+      </div>
+
+      <div class="card">
+        <div class="toolbar">
+          <input class="search-input" id="search" placeholder="Search action items…" />
+          <button class="btn btn-primary" id="add-btn">+ New Action Item</button>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Action item</th>
+                <th>Curriculum</th>
+                <th>Related lesson</th>
+                <th>Priority</th>
+                <th>Due</th>
+                <th>Status</th>
+                <th>Results</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="rows"></tbody>
+          </table>
+        </div>
+        <div id="empty" class="empty-state" style="display:none;">No action items yet. Add your first one above.</div>
+      </div>
+    </main>
+  </div>
+
+  <script src="/js/utils.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/nav.js"></script>
+  <script src="/js/modal.js"></script>
+  <script src="/js/actionlab.js"></script>
+</body>
+</html>

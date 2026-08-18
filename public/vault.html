@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>My Curriculum — Vault</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body data-page="vault">
+  <div class="app-shell">
+    <div id="sidebar-root"></div>
+    <main class="main">
+      <div class="page-header">
+        <h1>Vault</h1>
+        <p>Your second brain: every key takeaway, searchable in one place.</p>
+      </div>
+
+      <div class="card">
+        <div class="toolbar">
+          <input class="search-input" id="search" placeholder="Search notes, topics, tags…" />
+          <button class="btn btn-primary" id="add-btn">+ New Note</button>
+        </div>
+      </div>
+
+      <div id="grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:16px; margin-top:20px;"></div>
+      <div id="empty" class="empty-state" style="display:none;">Your vault is empty. Save your first takeaway above.</div>
+    </main>
+  </div>
+
+  <script src="/js/utils.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/nav.js"></script>
+  <script src="/js/modal.js"></script>
+  <script src="/js/vault.js"></script>
+</body>
+</html>
