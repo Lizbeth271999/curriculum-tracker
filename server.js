@@ -1,15 +1,16 @@
 'use strict';
 /**
  * Personal Curriculum Tracker - server
- * Zero external dependencies: uses only Node's built-in http, fs, url, and
- * node:sqlite modules. Run with: node server.js
+ * Only external dependency: `pg` (Postgres driver), since a free host needs
+ * real persistent storage rather than a local SQLite file. Run with:
+ * node server.js (after `npm install`).
  */
 const http = require('http');
 const url = require('url');
 const fs = require('fs');
 const path = require('path');
 
-const db = require('./lib/db');
+const { pool, ready } = require('./lib/db');
 const { makeCrud } = require('./lib/crud');
 const { getDashboardData } = require('./lib/stats');
 const { checkIn } = require('./lib/habits');
@@ -17,25 +18,25 @@ const { checkIn } = require('./lib/habits');
 const PORT = process.env.PORT || 3000;
 const PUBLIC_DIR = path.join(__dirname, 'public');
 
-const curricula = makeCrud(db, 'curriculum', [
+const curricula = makeCrud(pool, 'curriculum', [
   'name', 'category', 'status', 'start_date', 'end_date', 'outcome_goal',
   'progress_percent', 'is_active', 'current_lesson', 'next_action',
 ]);
-const resources = makeCrud(db, 'resource', ['name', 'type', 'curriculum_id', 'priority', 'status', 'notes']);
-const lessons = makeCrud(db, 'lesson', [
+const resources = makeCrud(pool, 'resource', ['name', 'type', 'curriculum_id', 'priority', 'status', 'notes']);
+const lessons = makeCrud(pool, 'lesson', [
   'name', 'curriculum_id', 'week_number', 'module_name', 'resource_id',
   'due_date', 'completed', 'completed_date', 'hours_logged',
 ]);
-const actions = makeCrud(db, 'action_item', [
+const actions = makeCrud(pool, 'action_item', [
   'action_item', 'curriculum_id', 'related_lesson_id', 'priority', 'due_date',
   'status', 'results', 'hours_logged',
 ]);
-const reflections = makeCrud(db, 'reflection', [
+const reflections = makeCrud(pool, 'reflection', [
   'date', 'curriculum_id', 'biggest_insight', 'what_changed', 'wins', 'challenges',
   'action_steps', 'what_did_i_learn', 'how_can_i_apply', 'action_this_week', 'expected_result',
 ]);
-const vault = makeCrud(db, 'vault_note', ['title', 'curriculum_id', 'topic', 'key_takeaway', 'tags']);
-const habits = makeCrud(db, 'habit', ['name', 'curriculum_id', 'frequency']);
+const vault = makeCrud(pool, 'vault_note', ['title', 'curriculum_id', 'topic', 'key_takeaway', 'tags']);
+const habits = makeCrud(pool, 'habit', ['name', 'curriculum_id', 'frequency']);
 
 const resourceMap = { curricula, resources, lessons, actions, reflections, vault, habits };
 
@@ -105,40 +106,43 @@ async function handleApi(req, res, pathname, method) {
 
   try {
     if (resourceKey === 'dashboard' && method === 'GET') {
-      return sendJson(res, 200, getDashboardData(db));
+      return sendJson(res, 200, await getDashboardData(pool));
     }
 
     const crud = resourceMap[resourceKey];
     if (!crud) return sendJson(res, 404, { error: 'Unknown resource' });
 
     if (id && action === 'activate' && resourceKey === 'curricula' && method === 'POST') {
-      db.prepare('UPDATE curriculum SET is_active = 0').run();
-      db.prepare("UPDATE curriculum SET is_active = 1, updated_at = datetime('now') WHERE id = ?").run(id);
-      return sendJson(res, 200, crud.get(id));
+      await pool.query('UPDATE curriculum SET is_active = 0', []);
+      await pool.query(
+        "UPDATE curriculum SET is_active = 1, updated_at = to_char(now(), 'YYYY-MM-DD HH24:MI:SS') WHERE id = $1",
+        [id]
+      );
+      return sendJson(res, 200, await crud.get(id));
     }
 
     if (id && action === 'checkin' && resourceKey === 'habits' && method === 'POST') {
       const body = await readBody(req);
-      const updated = checkIn(db, id, body.date);
+      const updated = await checkIn(pool, id, body.date);
       return sendJson(res, 200, updated);
     }
 
-    if (!id && method === 'GET') return sendJson(res, 200, crud.list());
+    if (!id && method === 'GET') return sendJson(res, 200, await crud.list());
     if (!id && method === 'POST') {
       const body = await readBody(req);
-      return sendJson(res, 201, crud.create(body));
+      return sendJson(res, 201, await crud.create(body));
     }
     if (id && method === 'GET') {
-      const row = crud.get(id);
+      const row = await crud.get(id);
       if (!row) return sendJson(res, 404, { error: 'Not found' });
       return sendJson(res, 200, row);
     }
     if (id && method === 'PUT') {
       const body = await readBody(req);
-      return sendJson(res, 200, crud.update(id, body));
+      return sendJson(res, 200, await crud.update(id, body));
     }
     if (id && method === 'DELETE') {
-      return sendJson(res, 200, crud.remove(id));
+      return sendJson(res, 200, await crud.remove(id));
     }
     return sendJson(res, 405, { error: 'Method not allowed' });
   } catch (err) {
@@ -157,6 +161,13 @@ const server = http.createServer((req, res) => {
   }
 });
 
-server.listen(PORT, () => {
-  console.log(`Personal Curriculum Tracker running at http://localhost:${PORT}`);
-});
+ready()
+  .then(() => {
+    server.listen(PORT, () => {
+      console.log(`Personal Curriculum Tracker running at http://localhost:${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.error('Failed to set up the database:', err.message);
+    process.exit(1);
+  });
